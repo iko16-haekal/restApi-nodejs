@@ -93,3 +93,22 @@ exports.update = (req, res) => {
     });
   }
 };
+
+exports.delete = (req, res) => {
+  try {
+    const id = req.params.id;
+    const post = model.post.destroy({
+      where: { id: id },
+    });
+
+    if (post) {
+      res.json({
+        message: "successfully deleting data where id = " + id,
+      });
+    }
+  } catch (error) {
+    res.json({
+      message: error,
+    });
+  }
+};
