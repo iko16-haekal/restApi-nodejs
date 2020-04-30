@@ -1,5 +1,6 @@
 const model = require("../models/index");
 const Op = require("sequelize").Op;
+
 exports.findAll = async (req, res) => {
   const title = req.query.title;
   const condition = title ? { title: { [Op.like]: `%${title}%` } } : null;
@@ -7,9 +8,13 @@ exports.findAll = async (req, res) => {
   try {
     if (post.length !== 0) {
       res.json({
-        status: 200,
-        massage: "ok",
-        data: post,
+        post,
+      });
+    } else {
+      res.json({
+        status: 404,
+        massage: "data not found",
+        data: "EMPTY",
       });
     }
   } catch (error) {
@@ -36,6 +41,25 @@ exports.create = async (req, res) => {
     }
   } catch (error) {
     res.status(400).json({
+      massage: error,
+    });
+  }
+};
+
+exports.findOne = async (req, res) => {
+  try {
+    const post = await model.post.findByPk(req.params.id);
+    if (post) {
+      res.json({
+        post,
+      });
+    } else {
+      res.status(500).json({
+        massage: "data not found" + req.params.id,
+      });
+    }
+  } catch (error) {
+    res.json({
       massage: error,
     });
   }
