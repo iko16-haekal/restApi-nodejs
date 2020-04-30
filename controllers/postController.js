@@ -112,3 +112,25 @@ exports.delete = (req, res) => {
     });
   }
 };
+
+exports.findPublished = (req, res) => {
+  const post = model.post.findAll({ where: { published: true } });
+  try {
+    if (post.length !== 0) {
+      res.json({
+        post,
+      });
+    } else {
+      res.json({
+        status: 404,
+        message: "data not found",
+        data: "EMPTY",
+      });
+    }
+  } catch {
+    res.json({
+      message: "error",
+    });
+    throw error;
+  }
+};
