@@ -13,13 +13,13 @@ exports.findAll = async (req, res) => {
     } else {
       res.json({
         status: 404,
-        massage: "data not found",
+        message: "data not found",
         data: "EMPTY",
       });
     }
   } catch (error) {
     res.json({
-      massage: "error",
+      message: "error",
     });
     throw error;
   }
@@ -35,13 +35,13 @@ exports.create = async (req, res) => {
 
     if (post) {
       res.status(201).json({
-        massage: "data created successfully",
+        message: "data created successfully",
         data: post,
       });
     }
   } catch (error) {
     res.status(400).json({
-      massage: error,
+      message: error,
     });
   }
 };
@@ -55,12 +55,41 @@ exports.findOne = async (req, res) => {
       });
     } else {
       res.status(500).json({
-        massage: "data not found" + req.params.id,
+        message: "data not found" + req.params.id,
       });
     }
   } catch (error) {
     res.json({
-      massage: error,
+      message: error,
+    });
+  }
+};
+
+exports.update = (req, res) => {
+  try {
+    const id = req.params.id;
+    const post = model.post.update(
+      {
+        title: req.body.title,
+        description: req.body.description,
+        published: req.body.published ? req.body.published : false,
+      },
+      {
+        where: {
+          id: id,
+        },
+      }
+    );
+
+    if (post) {
+      res.json({
+        message: "data updated successfully",
+        data: post,
+      });
+    }
+  } catch (error) {
+    res.json({
+      message: error,
     });
   }
 };
