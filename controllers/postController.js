@@ -26,13 +26,12 @@ exports.findAll = async (req, res) => {
 };
 
 exports.create = async (req, res) => {
+  const post = await model.post.create({
+    title: req.body.title,
+    description: req.body.description,
+    published: req.body.published ? req.body.published : false,
+  });
   try {
-    const post = await model.post.create({
-      title: req.body.title,
-      description: req.body.description,
-      published: req.body.published ? req.body.published : false,
-    });
-
     if (post) {
       res.status(201).json({
         message: "data created successfully",
@@ -47,8 +46,8 @@ exports.create = async (req, res) => {
 };
 
 exports.findOne = async (req, res) => {
+  const post = await model.post.findByPk(req.params.id);
   try {
-    const post = await model.post.findByPk(req.params.id);
     if (post) {
       res.json({
         post,
@@ -65,22 +64,21 @@ exports.findOne = async (req, res) => {
   }
 };
 
-exports.update = (req, res) => {
-  try {
-    const id = req.params.id;
-    const post = model.post.update(
-      {
-        title: req.body.title,
-        description: req.body.description,
-        published: req.body.published ? req.body.published : false,
+exports.update = async (req, res) => {
+  const id = req.params.id;
+  const post = await model.post.update(
+    {
+      title: req.body.title,
+      description: req.body.description,
+      published: req.body.published ? req.body.published : false,
+    },
+    {
+      where: {
+        id: id,
       },
-      {
-        where: {
-          id: id,
-        },
-      }
-    );
-
+    }
+  );
+  try {
     if (post) {
       res.json({
         message: "data updated successfully",
@@ -94,13 +92,12 @@ exports.update = (req, res) => {
   }
 };
 
-exports.delete = (req, res) => {
+exports.delete = async (req, res) => {
+  const id = req.params.id;
+  const post = await model.post.destroy({
+    where: { id: id },
+  });
   try {
-    const id = req.params.id;
-    const post = model.post.destroy({
-      where: { id: id },
-    });
-
     if (post) {
       res.json({
         message: "successfully deleting data where id = " + id,
@@ -113,8 +110,8 @@ exports.delete = (req, res) => {
   }
 };
 
-exports.findPublished = (req, res) => {
-  const post = model.post.findAll({ where: { published: true } });
+exports.findPublished = async (req, res) => {
+  const post = await model.post.findAll({ where: { published: true } });
   try {
     if (post.length !== 0) {
       res.json({
@@ -132,5 +129,24 @@ exports.findPublished = (req, res) => {
       message: "error",
     });
     throw error;
+  }
+};
+
+exports.deleteAll = async (req, res) => {
+  const post = await model.post.destroy({ where: {} });
+  try {
+    if (post > 0) {
+      res.json({
+        message: "deleting all data successfully",
+      });
+    } else {
+      res.json({
+        message: "there is no data to delete",
+      });
+    }
+  } catch (error) {
+    res.json({
+      message: error,
+    });
   }
 };
