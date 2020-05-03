@@ -4,7 +4,10 @@ const Op = require("sequelize").Op;
 exports.findAll = async (req, res) => {
   const title = req.query.title;
   const condition = title ? { title: { [Op.like]: `%${title}%` } } : null;
-  const post = await model.post.findAll({ where: condition });
+  const post = await model.post.findAll({
+    where: condition,
+    order: [["id", "DESC"]],
+  });
   try {
     if (post.length !== 0) {
       res.json({
